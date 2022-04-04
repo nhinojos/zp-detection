@@ -1,14 +1,10 @@
 ### Converts the .txt data to .csv. 
 ## Importing libraries.
-import numpy as np
 import pandas as pd
-from pathlib import Path
 import os
 
-# Iterates through txt folder given the directory of data folder. 
-directory_data="C:\\Users\\noaha\\Documents\\GitHub\\Searching-For-Z'-Boson-P121W-Lab\\data"
-for filename in os.listdir(directory_data+'\\txt'):
-    file_txt=open(os.path.join(directory_data+'\\txt',filename),'r')
+for filename in os.listdir('data\\txt'):
+    file_txt=open(os.path.join("data\\txt",filename),'r')
     df=pd.DataFrame(columns=['Momenta','Eta','Phi'])
 
     ## Extracts data in .txt file line-by-line.
@@ -22,7 +18,6 @@ for filename in os.listdir(directory_data+'\\txt'):
             eta=[]
             phi=[]
             charge=0
-            continue
         
         # Will extract collision data for two iterations.
         elif investigate_collision>0:
@@ -55,4 +50,4 @@ for filename in os.listdir(directory_data+'\\txt'):
                 df.loc[len(df.index)]=[momenta,eta,phi]
     
     # Writes the panda dataframe as a .csv file to the csv folder within the data folder. 
-    df.to_csv(directory_data+'\\csv\\'+filename[:-4]+'.csv')
+    df.to_csv("data\\csv\\"+filename[:-4]+".csv")
