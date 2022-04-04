@@ -13,10 +13,7 @@ for filename in os.listdir(directory_data+'\\txt'):
 
     ## Extracts data in .txt file line-by-line.
     investigate_collision=0
-    l=0
     for line in file_txt:
-        l+=1
-        print('Iterating through:', filename)
         # Scans for instances where the number of electrons is two.
         if "NumElectrons: 2" in line:    
             # Initial variables for data extraction. 
@@ -57,5 +54,5 @@ for filename in os.listdir(directory_data+'\\txt'):
             if investigate_collision==0:
                 df.loc[len(df.index)]=[momenta,eta,phi]
     
-    # Writes the panda dataframe as a csv file to the csv folder within data folder. 
+    # Writes the panda dataframe as a .csv file to the csv folder within the data folder. 
     df.to_csv(directory_data+'\\csv\\'+filename[:-4]+'.csv')
