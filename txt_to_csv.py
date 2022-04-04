@@ -45,7 +45,10 @@ for filename in os.listdir('data\\txt'):
             index_r=line.find(" Charge")
             phi.append(float(line[index_l:index_r]))
             
+            # Investigates collision twice. 
             investigate_collision-=1
+
+            #Appends extrated data to dataframe. 
             if investigate_collision==0:
                 df.loc[len(df.index)]=[momenta,eta,phi]
     
