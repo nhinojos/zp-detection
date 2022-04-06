@@ -3,13 +3,18 @@
 import pandas as pd
 import os
 
+# Opening objects from txt folder to read line-by-line.
 for filename in os.listdir('data\\txt'):
     file_txt=open(os.path.join("data\\txt",filename),'r')
-    df=pd.DataFrame(columns=['Momenta','Eta','Phi'])
+    df=pd.DataFrame(columns=["Momenta 1","Momenta 2","Eta 1","Eta 2","Phi 1","Phi 2"])
+
+
 
     ## Extracts data in .txt file line-by-line.
     investigate_collision=0
-    for line in file_txt:
+    for n,line in enumerate(file_txt):
+        if n%10000==0:
+            print("Line: ",n)
         # Scans for instances where the number of electrons is two.
         if "NumElectrons: 2" in line:    
             # Initial variables for data extraction. 
@@ -50,7 +55,7 @@ for filename in os.listdir('data\\txt'):
 
             #Appends extrated data to dataframe. 
             if investigate_collision==0:
-                df.loc[len(df.index)]=[momenta,eta,phi]
+                df.loc[len(df.index)]=[momenta[0],momenta[1],eta[0],eta[1],phi[0],phi[1]]
     
     # Writes the panda dataframe as a .csv file to the csv folder within the data folder. 
-    df.to_csv("data\\csv\\"+filename[:-4]+".csv")
+    df.to_csv("data\\csv\\"+filename[:-3]+"csv")
