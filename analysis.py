@@ -1,13 +1,15 @@
 # Does the physics calulations
 import pandas as pd
 import numpy as np
+import matplotlib.pyplot as plt
 
-# Reads the .csv
+# Reads the .csv for the example 750V case from document
 with open("data\\csv\\ee_mll650_electrons.csv") as file:
     df_650=pd.read_csv(file,index_col=0)
 
 ## Inital given variables:
-mass_e = .5109906 * (10**6)
+    # Mass electron in GeV
+mass_e = .510998950 * (10**-3)
 
 pT1 = df_650.loc[:,"Momenta 1"]
 phi1 = df_650.loc[:,"Phi 1"]
@@ -18,36 +20,39 @@ phi2 = df_650.loc[:,"Phi 2"]
 eta2 = df_650.loc[:,"Eta 2"]
 
 
-## Momentum & Energy Calculations.
-pvector1 = [pT1*np.cos(phi1),pT1*np.sin(phi1),pT1*np.sinh(eta1)]
-energy1 = np.sqrt( (mass_e**2) + (pvector1[0]**2) + (pvector1[1]**2) + (pvector1[2]**2) )
-fvector_1 = [energy1, pvector1[0], pvector1[1], pvector1[2] ]
+## Momentum, Energy, and Four-Vector Calculations.
+# Momentum.
+p1 = [ pT1*np.cos(phi1), pT1*np.sin(phi1), pT1*np.sinh(eta1) ]
+p2 = [ pT2*np.cos(phi2), pT2*np.sin(phi2), pT2*np.sinh(eta2) ]
+psum = p1 + p2
+pdot = p1[0]*p2[0] + p1[1]*p2[1] + p1[2]*p2[2]
 
-pvector2 = [pT2*np.cos(phi2),pT2*np.sin(phi2),pT2*np.sinh(eta2)]
-energy2 = np.sqrt( (mass_e**2) + (pvector2[0]**2) + (pvector2[1]**2) + (pvector2[2]**2) )
-fvector_2 = [energy2, pvector2[0], pvector2[1], pvector2[2] ]
+# Energy.
+E1 = np.sqrt( (mass_e**2) + (p1[0]**2) + (p1[1]**2) + (p1[2]**2) )
+E2 = np.sqrt( (mass_e**2) + (p2[0]**2) + (p2[1]**2) + (p2[2]**2) )
+Esum = E1 + E2
 
-_4vector_sum = fvector_1+fvector_2
-_4vector_sum_norm =np.sqrt( _4vector_sum[0]**2 + _4vector_sum[1]**2 + _4vector_sum[2]**2 + _4vector_sum[3]**2 )
-inv_mass = np.sqrt( (energy1 + energy2)**2 - _4vector_sum_norm**2 )
+# Four-Vector.
+fv1 = [E1,p1[0],p1[1],p1[2]]
+fv2 = [E2,p2[0],p2[1],p2[2]]
+fvsum = fv1 + fv2
 
-print("")
 
-print("inv_mass")
+## Invariant Mass Calulation.
+
+inv_mass = np.sqrt( 2*(mass_e**2 + E1*E2 - pdot) )
+
+
+
+
 print(inv_mass)
-for i in range(3):
-    print("")
 
-print("E_1 + E_2")
-print(energy1 + energy2)
-for i in range(3):
-    print("")
-
-print("_4vector_sum_norm")
-print(_4vector_sum_norm)
-for i in range(3):
-    print("")
-
-
+display_historgram = True
+if display_historgram:
+    signal = 1
+    rng=(710,830)
+    df = signal * inv_mass
+    ax = df.plot.hist(bins=39, range=rng)
+    plt.show()
 
 
