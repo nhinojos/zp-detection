@@ -57,5 +57,10 @@ for filename in os.listdir('data\\txt'):
             if investigate_collision==0:
                 df.loc[len(df.index)]=[momenta[0],momenta[1],eta[0],eta[1],phi[0],phi[1]]
     
-    # Writes the panda dataframe as a .csv file to the csv folder within the data folder. 
-    df.to_csv("data\\csv\\"+filename[:-3]+"csv")
+    ## Writes the panda dataframe as a .csv file to the csv folder within the data folder. 
+    # Specifies which folder based on the name of the file. 
+    if "ee" in filename:
+        folder="background"
+    else:
+        folder="signal"
+    df.to_csv("data\\csv\\"+folder+"\\"+filename[:-3]+"csv")
