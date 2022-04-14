@@ -1,6 +1,4 @@
 # Does the physics calulations
-from cProfile import label
-from operator import index
 import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
