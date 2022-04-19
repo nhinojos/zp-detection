@@ -1,4 +1,5 @@
-# Does the physics calulations
+# Calulates invariant mass
+# Plots invariant mass on histograms
 import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
@@ -31,15 +32,15 @@ bkgd_to_sgnl = {"175":"200","275":"300","375":"400","450":"500","650":"750","900
 i = 0
 
 ## Parsing through .csv data
-for filename in os.listdir("data\\csv\\background"):
+for filename in os.listdir("collision data\\csv\\background"):
 
     ## Reads each .csv as Pandas dataframe. 
     # Reads background and signal data.
-    with open(os.path.join("data\\csv\\background",
+    with open(os.path.join("collision data\\csv\\background",
               filename), 
               'r') as file:
         data_bkgd = pd.read_csv(file,index_col=0)
-    with open(os.path.join("data\\csv\\signal", 
+    with open(os.path.join("collision data\\csv\\signal", 
                             "zp_mzp"+bkgd_to_sgnl[filename[6:9]]+"_electrons.csv"),
                             'r') as file:
         data_sgnl = pd.read_csv(file,index_col=0)
@@ -58,6 +59,8 @@ for filename in os.listdir("data\\csv\\background"):
                               pT2 = data_sgnl.loc[:,"Momenta 2"],
                               phi2 = data_sgnl.loc[:,"Phi 2"],
                               eta2 = data_sgnl.loc[:,"Eta 2"])
+
+
 
     ## Initial variables for histogram construction.
     # Histogram Weights.
