@@ -27,6 +27,7 @@ def invariant_mass(pT1,phi1,eta1,pT2,phi2,eta2):
 
 ## Calculating and plotting histograms.
 # Initial variables.
+sig_df = pd.DataFrame(columns=["Mass","Statistical Significance","Zp Invariant Mass","Delta"])
 hist_wght = pd.read_csv("hist_weights.csv",index_col=0)
 bkgd_to_sgnl = {"175":"200","275":"300","375":"400","450":"500","650":"750","900":"1000"}
 i = 0
@@ -67,11 +68,10 @@ for filename in os.listdir("collision data\\csv\\background"):
     wght_bkgd = hist_wght.loc[i,"Background Weight"]*np.ones(len(imass_bkgd.index))
     wght_sgnl = hist_wght.loc[i,"Signal Weight"]*np.ones(len(imass_sgnl.index))
     wght_comb = np.concatenate((wght_bkgd,wght_sgnl))
-
-    # Graph range and bin size
+    # Graph range and bin size, chosen almost arbitrarily.
     mass = hist_wght.loc[i,"Mass"]
-    delta = 20+.03*mass
-    b=40
+    range_delta = 20 + .02*mass
+    bin=40
     # Boolean for both iterations.
     include_signal = False
     
@@ -82,20 +82,20 @@ for filename in os.listdir("collision data\\csv\\background"):
         # Background+Signal histogram construction. 
         if include_signal:
             imass_comb = pd.concat([imass_bkgd,imass_sgnl])
-            hist_sgnl = plt.hist(imass_comb,
-                                 bins = b, 
-                                 range = (mass-delta,mass+delta),
+            hist_comb = plt.hist(imass_comb,
+                                 bins = bin, 
+                                 range = (mass - range_delta,mass + range_delta),
                                  weights = wght_comb,
                                  label = "Signal",
                                  color = 'mediumturquoise')
 
         # Background-Only histogram construction.
-        
-        bkgd_hist = imass_bkgd.plot.hist(bins = b, 
-                                        range = (mass-delta,mass+delta),
-                                        weights = wght_bkgd,
-                                        label= "Bkgd",
-                                        color= "darkslategray")
+        hist_bkgd = plt.hist(imass_bkgd,
+                             bins = bin, 
+                             range = (mass - range_delta,mass + range_delta),
+                             weights = wght_bkgd,
+                             label= "Bkgd",
+                             color= "darkslategray")
         
         # Labels for both histograms
         plt.ylabel("Entities / bin")
@@ -114,4 +114,49 @@ for filename in os.listdir("collision data\\csv\\background"):
             plt.legend()
             plt.savefig("histograms\\"+str(mass)+"GeV_signal-background.png")
         plt.clf()
+
+
+    ### Statistical Significance
+    ## M_Z` values are recorded as peaks of n signal values.
+    # n signal variables generated.
+    # imass_opt is a list of 'optimal' invariant masses.
+    n_sgnl_list = hist_comb[0] - hist_bkgd[0]
+    n_sgnl_avg = np.average(n_sgnl_list)
+    n_sgnl_prior = 0
+    imass_opt = []
+    for j,n_sgnl in enumerate(n_sgnl_list):
+
+        # If n signal decreased and the prior n signal is above average,
+        # record the corresponing invariant mass.
+        if (n_sgnl <= n_sgnl_prior) and (n_sgnl_prior >= n_sgnl_avg):
+            imass_opt.append(hist_comb[1][j-1])
+
+        # Assigns curreny n signal as prior n signal for the next iteration.
+        n_sgnl_prior = n_sgnl
+
+
+    ## Finding optimal statistical significance
+    sig_vals=(0,0,0)
+    # Numerical analysis by testing larger deltas. 
+    for imass in  imass_opt:
+        for delta in range(1,100):
+            # Histogram index of {mass +- delta} window.
+            window_index = (min(np.where(hist_comb[1] >= imass - .1*delta)[0]), 
+                            max(np.where(hist_comb[1] <= imass + .1*delta)[0]))
+
+            # Summing histogram n's using window indeces.
+            ntot_bkgd = np.sum(hist_bkgd[0][window_index[0]: window_index[1] + 1])
+            ntot_sgnl = np.sum(n_sgnl_list[window_index[0]: window_index[1] + 1])
+            
+            # Calculating statistical significance by
+            # Keeping maximum value and recording corresponding delta.
+            ss = ntot_sgnl / np.sqrt(ntot_bkgd)
+            if ss > sig_vals[0]:
+                sig_vals = (ss,imass,.1*delta)
+    
+    sig_df.loc[len(sig_df.index)] = [bkgd_to_sgnl[filename[6:9]], sig_vals[0], sig_vals[1], sig_vals[2]]
+
     i+=1
+
+print("")
+print(sig_df)
