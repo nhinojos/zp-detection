@@ -70,8 +70,8 @@ for filename in os.listdir("collision data\\csv\\background"):
     wght_comb = np.concatenate((wght_bkgd,wght_sgnl))
     # Graph range and bin size, chosen almost arbitrarily.
     mass = hist_wght.loc[i,"Mass"]
-    range_delta = 20 + .02*mass
-    bin=40
+    range_delta = 20 + .03*mass
+    bin = 60
     # Boolean for both iterations.
     include_signal = False
     
@@ -104,7 +104,7 @@ for filename in os.listdir("collision data\\csv\\background"):
         # Label and save background-only histogram.
         if not include_signal:
             plt.title(str(mass)+"GeV Background")
-            plt.savefig("histograms\\"+str(mass)+"GeV_background.png")
+            #plt.savefig("histograms\\"+str(mass)+"GeV_background.png")
             include_signal = True
 
 
@@ -112,7 +112,7 @@ for filename in os.listdir("collision data\\csv\\background"):
         else:
             plt.title(str(mass)+"GeV Background+Signal")
             plt.legend()
-            plt.savefig("histograms\\"+str(mass)+"GeV_signal-background.png")
+            #plt.savefig("histograms\\"+str(mass)+"GeV_signal-background.png")
         plt.clf()
 
 
