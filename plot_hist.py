@@ -71,7 +71,7 @@ for filename in os.listdir("collision data\\csv\\background"):
     # Graph range and bin size, chosen almost arbitrarily.
     mass = hist_wght.loc[i,"Mass"]
     range_delta = 20 + .03*mass
-    bin = 60
+    bin = 40
     # Boolean for both iterations.
     include_signal = False
     

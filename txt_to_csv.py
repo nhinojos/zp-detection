@@ -12,9 +12,7 @@ for filename in os.listdir('data\\txt'):
 
     ## Extracts data in .txt file line-by-line.
     investigate_collision=0
-    for n,line in enumerate(file_txt):
-        if n%10000==0:
-            print("Line: ",n)
+    for line in file_txt:
         # Scans for instances where the number of electrons is two.
         if "NumElectrons: 2" in line:    
             # Initial variables for data extraction. 
