@@ -158,5 +158,6 @@ for filename in os.listdir("collision data\\csv\\background"):
 
     i+=1
 
+### Displayes all statistical measurements.
 print("")
 print(sig_df)
